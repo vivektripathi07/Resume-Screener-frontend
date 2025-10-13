@@ -18,7 +18,7 @@ const ApplicantList: React.FC<Props> = ({ selectedJob }) => {
   useEffect(() => {
     if (!selectedJob) return;
     const fetchApplicants = async () => {
-      const res = await fetch(`http://localhost:8000/api/applicants?jobId=${selectedJob._id}`);
+      const res = await fetch(`https://resume-screener-backend.vercel.app/api/applicants?jobId=${selectedJob._id}`);
       const data = await res.json();
 
       const mapped: Applicant[] = data.map((app: any) => ({
@@ -27,7 +27,7 @@ const ApplicantList: React.FC<Props> = ({ selectedJob }) => {
         email: app.user_email,
         appliedDate: new Date(app.uploaded_at).toLocaleDateString(),
         experience: '2-5 years',
-        resumeUrl: `http://localhost:8000/api/applicant/file?applicantId=${app._id.toString()}`,
+        resumeUrl: `https://resume-screener-backend.vercel.app/api/applicant/file?applicantId=${app._id.toString()}`,
         status: determineInitialStatus(app.ai_score),
         jobId: app.job_id,
         skills: parseSkills(app.skills),
@@ -44,7 +44,7 @@ const ApplicantList: React.FC<Props> = ({ selectedJob }) => {
 
   const updateApplicantStatus = async (id: string, status: Applicant['status']) => {
     setApplicants((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-    await fetch(`http://localhost:8000/api/applicants/${id}/status`, {
+    await fetch(`https://resume-screener-backend.vercel.app/api/applicants/${id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
