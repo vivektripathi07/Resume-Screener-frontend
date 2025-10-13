@@ -43,7 +43,7 @@ const JobBoard: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/jobs');
+        const response = await fetch('https://resume-screener-backend.vercel.app/api/jobs');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
