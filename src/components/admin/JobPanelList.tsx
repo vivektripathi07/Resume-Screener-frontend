@@ -2,7 +2,7 @@
 import React from 'react';
 import { Search, Filter, MapPin, Briefcase, Clock } from 'lucide-react';
 import type { Job } from '../types';
-import { getStatusColor } from './utils';
+// import { getStatusColor } from './utils';
 
 interface Props {
   jobs: Job[];
