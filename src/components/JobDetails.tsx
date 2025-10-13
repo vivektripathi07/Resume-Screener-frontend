@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Job } from './types';
 
 interface JobDetailsProps {
@@ -9,10 +9,26 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [_uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<string>('Just a minute...');
   const [progress, setProgress] = useState<number>(0);
+
+  // Track if user has applied to this job
+  const [hasApplied, setHasApplied] = useState<boolean>(() => {
+    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+    return appliedJobs.includes(job._id);
+  });
+
+  // Save applied status to localStorage whenever it changes
+  useEffect(() => {
+    if (hasApplied) {
+      const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '[]');
+      if (!appliedJobs.includes(job._id)) {
+        localStorage.setItem('appliedJobs', JSON.stringify([...appliedJobs, job._id]));
+      }
+    }
+  }, [hasApplied, job._id]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -44,7 +60,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
     setProgress(0);
 
     const totalSteps = 5;
-    const stepDuration = 800; // ms
+    const stepDuration = 8000; // ms
     const totalDuration = totalSteps * stepDuration; // 4000 ms
 
     // Simulate progress steps
@@ -77,7 +93,6 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
     };
 
     try {
-      // Perform actual upload
       const formData = new FormData();
       formData.append('file', selectedFile);
 
@@ -110,10 +125,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
     // Wait for both: upload done AND full duration elapsed
     await waitForFullDuration;
 
-    // Now update UI based on result
     if (uploadResult.success) {
       setCurrentStep('Resume uploaded successfully!');
       setProgress(100);
+      setHasApplied(true); // ✅ Mark as applied
 
       setTimeout(() => {
         closeModal();
@@ -150,10 +165,15 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
         </div>
         <div className="flex space-x-2">
           <button
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 text-sm font-medium"
-            onClick={() => setIsUploadModalOpen(true)}
+            className={`px-6 py-2 rounded-md text-sm font-medium text-white ${
+              hasApplied
+                ? 'bg-green-600 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+            onClick={() => !hasApplied && setIsUploadModalOpen(true)}
+            disabled={hasApplied}
           >
-            Upload Resume
+            {hasApplied ? 'Applied' : 'Upload Resume'}
           </button>
         </div>
       </div>
@@ -217,14 +237,14 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
                   </button>
                   <button
                     onClick={handleUpload}
-                    disabled={!selectedFile || uploadSuccess}
+                    disabled={!selectedFile}
                     className={`px-4 py-2 rounded-md text-white ${
-                      !selectedFile || uploadSuccess
+                      !selectedFile
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                   >
-                    {uploadSuccess ? 'Uploaded!' : 'Upload'}
+                    Upload
                   </button>
                 </div>
               )}
@@ -252,7 +272,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job }) => {
         </div>
 
         <div>
-          <h3 className="font-semibold text-gray-900 mb-3">Responsiblities:</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">Responsibilities:</h3>
           <ul className="space-y-2">
             {job.responsibilities.map((item, index) => (
               <li key={index} className="flex items-start text-sm text-gray-600">
