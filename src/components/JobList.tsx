@@ -14,11 +14,11 @@ const JobList: React.FC<JobListProps> = ({ jobs, selectedJob, onSelectJob, onTog
     <div className="space-y-4">
       {jobs.map((job) => (
         <JobCard
-          key={job.id}
+          key={job._id}
           job={job}
-          isSelected={selectedJob?.id === job.id}
+          isSelected={selectedJob?._id === job._id}
           onSelect={() => onSelectJob(job)}
-          onToggleSave={() => onToggleSave(job.id)}
+          onToggleSave={() => onToggleSave(job._id)}
         />
       ))}
     </div>
