@@ -11,7 +11,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const res = await fetch('http://localhost:8000/api/jobs');
+      const res = await fetch('https://resume-screener-backend.vercel.app/api/jobs');
       const data: Job[] = await res.json();
       setJobs(
         data.map((j) => ({
