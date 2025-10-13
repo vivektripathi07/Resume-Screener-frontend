@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   })
 
   const login = async (email: string, password: string) => {
-    const res = await fetch('http://127.0.0.1:8000/api/signin', {
+    const res = await fetch('https://resume-screener-backend.vercel.app/api/signin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const signup = async (email: string, password: string, name: string) => {
-    const res = await fetch('http://127.0.0.1:8000/api/signup', {
+    const res = await fetch('https://resume-screener-backend.vercel.app/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, full_name: name }),

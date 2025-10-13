@@ -17,3 +17,19 @@ export interface Job {
   isTrusted: boolean;
   isSaved: boolean;
 }
+
+export interface Applicant {
+  id: string;
+  name: string;
+  email: string;
+  appliedDate: string;
+  experience: string;
+  resumeUrl: string;
+  status: 'Pending' | 'Reviewed' | 'Shortlisted' | 'Rejected';
+  jobId: string;
+  skills: string[];
+  education: string;
+  aiScore: number;
+  fileSize: number;
+  filename: string;
+}
